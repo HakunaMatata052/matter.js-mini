@@ -25,6 +25,7 @@ License ${pkg.license}${!minimize ? '\n\n' + license : ''}`;
     return {
         entry: { 'matter': './src/module/main.js' },
         node: false,
+        devtool: "source-map",
         output: {
             library: 'Matter',
             libraryTarget: 'umd',

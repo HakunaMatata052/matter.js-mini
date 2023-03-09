@@ -8593,18 +8593,6 @@ var Mouse = __webpack_require__(14);
 
 (function() {
 
-    var _requestAnimationFrame,
-        _cancelAnimationFrame;
-
-    if (typeof window !== 'undefined') {
-        _requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame
-                                      || window.mozRequestAnimationFrame || window.msRequestAnimationFrame
-                                      || function(callback){ window.setTimeout(function() { callback(Common.now()); }, 1000 / 60); };
-
-        _cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame
-                                      || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame;
-    }
-
     Render._goodFps = 30;
     Render._goodDelta = 1000 / 60;
 
@@ -8710,7 +8698,7 @@ var Mouse = __webpack_require__(14);
      */
     Render.run = function(render) {
         (function loop(time){
-            render.frameRequestId = _requestAnimationFrame(loop);
+            render.frameRequestId = render.canvas.requestAnimationFrame(loop);
             
             _updateTiming(render, time);
 
@@ -8732,7 +8720,7 @@ var Mouse = __webpack_require__(14);
      * @param {render} render
      */
     Render.stop = function(render) {
-        _cancelAnimationFrame(render.frameRequestId);
+        render.canvas.cancelAnimationFrame(render.frameRequestId);
     };
 
     /**
@@ -8751,11 +8739,11 @@ var Mouse = __webpack_require__(14);
         }
 
         options.pixelRatio = pixelRatio;
-        canvas.setAttribute('data-pixel-ratio', pixelRatio);
+        // canvas.setAttribute('data-pixel-ratio', pixelRatio);
         canvas.width = options.width * pixelRatio;
         canvas.height = options.height * pixelRatio;
-        canvas.style.width = options.width + 'px';
-        canvas.style.height = options.height + 'px';
+        // canvas.style.width = options.width + 'px';
+        // canvas.style.height = options.height + 'px';
     };
 
     /**
@@ -9313,6 +9301,7 @@ var Mouse = __webpack_require__(14);
                     var sprite = part.render.sprite,
                         texture = _getTexture(render, sprite.texture);
 
+                    // console.log(texture)
                     c.translate(part.position.x, part.position.y);
                     c.rotate(part.angle);
 
@@ -10017,13 +10006,7 @@ var Mouse = __webpack_require__(14);
      * @return {Number} pixel ratio
      */
     var _getPixelRatio = function(canvas) {
-        var context = canvas.getContext('2d'),
-            devicePixelRatio = window.devicePixelRatio || 1,
-            backingStorePixelRatio = context.webkitBackingStorePixelRatio || context.mozBackingStorePixelRatio
-                                      || context.msBackingStorePixelRatio || context.oBackingStorePixelRatio
-                                      || context.backingStorePixelRatio || 1;
-
-        return devicePixelRatio / backingStorePixelRatio;
+        return wx.getSystemInfoSync().pixelRatio;
     };
 
     /**
@@ -10035,15 +10018,17 @@ var Mouse = __webpack_require__(14);
      * @return {Image} texture
      */
     var _getTexture = function(render, imagePath) {
+
         var image = render.textures[imagePath];
 
         if (image)
             return image;
 
-        image = render.textures[imagePath] = new Image();
+        image = render.textures[imagePath] = render.canvas.createImage();
         image.src = imagePath;
 
         return image;
+
     };
 
     /**
@@ -10059,8 +10044,8 @@ var Mouse = __webpack_require__(14);
         if (/(jpg|gif|png)$/.test(background))
             cssBackground = 'url(' + background + ')';
 
-        render.canvas.style.background = cssBackground;
-        render.canvas.style.backgroundSize = "contain";
+        // render.canvas.style.background = cssBackground;
+        // render.canvas.style.backgroundSize = "contain";
         render.currentBackground = background;
     };
 
@@ -10999,3 +10984,4 @@ var Common = __webpack_require__(0);
 /***/ })
 /******/ ]);
 });
+//# sourceMappingURL=matter.js.map
